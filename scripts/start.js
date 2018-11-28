@@ -128,7 +128,7 @@ choosePort(HOST, DEFAULT_PORT)
             const urls = prepareUrls(
               protocol,
               HOST,
-              process.env.REACT_APP_SERVER_SIDE_RENDERING_PORT
+              process.env.REACT_APP_SERVER_SIDE_RENDERING_PORT || 8888
             );
 
             setTimeout(() => {
