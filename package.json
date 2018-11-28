@@ -1,6 +1,9 @@
 {
   "name": "react-scripts-ssr",
   "version": "0.1.1",
+  "engines": {
+    "node": ">=6"
+  },
   "dependencies": {
     "express": "^4.16.4",
     "react": "^16.6.3",
