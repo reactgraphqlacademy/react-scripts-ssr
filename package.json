@@ -1,6 +1,6 @@
 {
   "name": "react-scripts-ssr",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "engines": {
     "node": ">=6"
   },
@@ -18,7 +18,7 @@
     "extends": "react-app"
   },
   "bin": {
-    "react-scripts": "./bin/react-scripts-ssr.js"
+    "react-scripts-ssr": "./bin/react-scripts-ssr.js"
   },
   "browserslist": [
     ">0.2%",
