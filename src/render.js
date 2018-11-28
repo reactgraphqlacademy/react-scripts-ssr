@@ -42,6 +42,7 @@ async function render(pageData, req, res) {
             __dirname,
             "..",
             "..",
+            "..",
             "build",
             "index.html"
           );
