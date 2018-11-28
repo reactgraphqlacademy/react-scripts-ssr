@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const proxy = require("http-proxy-middleware");
-const render = require("../src/render");
+const render = require("./render");
 const { Router } = express;
 
 function renderMiddleware(payload, req, res, next) {
