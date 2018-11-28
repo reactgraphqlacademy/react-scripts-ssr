@@ -1,7 +1,6 @@
 {
   "name": "react-scripts-ssr",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "express": "^4.16.4",
     "react": "^16.6.3",
@@ -15,6 +14,9 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "bin": {
+    "react-scripts": "./bin/react-scripts-ssr.js"
+  },
   "browserslist": [
     ">0.2%",
     "not dead",
@@ -24,6 +26,7 @@
   "devDependencies": {
     "babel-loader": "^8.0.4",
     "babel-plugin-named-asset-import": "^0.2.3",
+    "cross-spawn": "^6.0.5",
     "http-proxy-middleware": "^0.19.0",
     "node-fetch": "^2.3.0",
     "nodemon": "^1.18.7"
