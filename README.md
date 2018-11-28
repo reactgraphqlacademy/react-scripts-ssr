@@ -48,3 +48,7 @@ You can edit the server.js file with your custom code and other middlewares.
 ### Step 3
 
 `npm start`
+
+## Caveats
+
+It only works with Create React App version 2
