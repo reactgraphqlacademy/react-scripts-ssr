@@ -19,7 +19,8 @@ In the scripts section of your package.json:
 
 ### Step 2
 
-Create the following file in src/server.js
+- `npm install express --save`
+- Create the following file in src/server.js
 
 ```javascript
 const React = require("react");
