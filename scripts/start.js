@@ -1,49 +1,38 @@
-'use strict';
+"use strict";
 
 // ln -s /Users/alexlobera/Projects/leanjscom/internal/react-design-system/react-scripts-ssr/bin/index.js /Users/alexlobera/Projects/leanjscom/internal/react-design-system/node_modules/.bin/react-scripts-ssr
 
 // Do this as the first thing so that any code reading it knows the right env.
-process.env.BABEL_ENV = 'development';
-process.env.NODE_ENV = 'development';
+process.env.BABEL_ENV = "development";
+process.env.NODE_ENV = "development";
 
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
-process.on('unhandledRejection', err => {
-    throw err;
+process.on("unhandledRejection", err => {
+  throw err;
 });
 
-const reactScriptsPath = 'react-scripts'
-const path = require('path');
-
+const reactScriptsPath = "react-scripts";
 // Ensure environment variables are read.
 require(`${reactScriptsPath}/config/env`);
 
-const terminalUtils = require('./terminal-utils');
-const { exec } = require('child_process')
-const fs = require('fs');
-const chalk = require('chalk');
-const webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
-const clearConsole = require('react-dev-utils/clearConsole');
-const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
+const { exec } = require("child_process");
+const fs = require("fs");
+const chalk = require("chalk");
+const webpack = require("webpack");
+const WebpackDevServer = require("webpack-dev-server");
+const clearConsole = require("react-dev-utils/clearConsole");
+const checkRequiredFiles = require("react-dev-utils/checkRequiredFiles");
 const {
-    choosePort,
-    createCompiler,
-    prepareProxy,
-    prepareUrls,
-} = require('react-dev-utils/WebpackDevServerUtils');
-const openBrowser = require('react-dev-utils/openBrowser');
+  choosePort,
+  createCompiler,
+  prepareProxy,
+  prepareUrls
+} = require("react-dev-utils/WebpackDevServerUtils");
+const openBrowser = require("react-dev-utils/openBrowser");
 
 const paths = require(`${reactScriptsPath}/config/paths`);
-// const appDirectory = fs.realpathSync(process.cwd());
-// const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
-
-// paths.serverBuild = resolveApp('build/server');
-// paths.appIndexJs = resolveApp('src/client/index.js');
-// paths.serverIndexJs = resolveApp('src/server/index.js');
-
-
 const config = require(`${reactScriptsPath}/config/webpack.config.dev`);
 const createDevServerConfig = require(`${reactScriptsPath}/config/webpackDevServer.config`);
 
@@ -52,120 +41,114 @@ const isInteractive = process.stdout.isTTY;
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
-    process.exit(1);
+  process.exit(1);
 }
 
 // Tools like Cloud9 rely on this.
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 3000;
-const HOST = process.env.HOST || '0.0.0.0';
+const HOST = process.env.HOST || "0.0.0.0";
 
 if (process.env.HOST) {
-    console.log(
-        chalk.cyan(
-            `Attempting to bind to HOST environment variable: ${chalk.yellow(
-                chalk.bold(process.env.HOST)
-            )}`
-        )
-    );
-    console.log(
-        `If this was unintentional, check that you haven't mistakenly set it in your shell.`
-    );
-    console.log(`Learn more here: ${chalk.yellow('http://bit.ly/2mwWSwH')}`);
-    console.log();
+  console.log(
+    chalk.cyan(
+      `Attempting to bind to HOST environment variable: ${chalk.yellow(
+        chalk.bold(process.env.HOST)
+      )}`
+    )
+  );
+  console.log(
+    `If this was unintentional, check that you haven't mistakenly set it in your shell.`
+  );
+  console.log(`Learn more here: ${chalk.yellow("http://bit.ly/2mwWSwH")}`);
+  console.log();
 }
 
 // We attempt to use the default port but if it is busy, we offer the user to
 // run on a different port. `choosePort()` Promise resolves to the next free port.
 choosePort(HOST, DEFAULT_PORT)
-    .then(port => {
-        if (port == null) {
-            // We have not found a port.
-            return;
-        }
-        const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
-        const appName = require(paths.appPackageJson).name;
-        const urls = prepareUrls(protocol, HOST, port);
-        // Create a webpack compiler that is configured with custom messages.
+  .then(port => {
+    if (port == null) {
+      // We have not found a port.
+      return;
+    }
+    const protocol = process.env.HTTPS === "true" ? "https" : "http";
+    const appName = require(paths.appPackageJson).name;
+    const urls = prepareUrls(protocol, HOST, port);
+    // Create a webpack compiler that is configured with custom messages.
+    const compiler = createCompiler(webpack, config, appName, urls, useYarn);
 
+    // Load proxy config
+    const proxySetting = require(paths.appPackageJson).proxy;
+    const proxyConfig = prepareProxy(proxySetting, paths.appPublic);
+    // Serve webpack assets generated by the compiler over a web sever.
+    const serverConfig = createDevServerConfig(
+      proxyConfig,
+      urls.lanUrlForConfig
+    );
+    const devServer = new WebpackDevServer(compiler, serverConfig);
 
-        const compiler = createCompiler(webpack, config, appName, urls, useYarn);
-        // const compiler = webpack(config)
+    devServer.listen(port, HOST, err => {
+      if (err) {
+        return console.log(err);
+      }
 
-        // Load proxy config
-        const proxySetting = require(paths.appPackageJson).proxy;
-        const proxyConfig = prepareProxy(proxySetting, paths.appPublic);
-        // Serve webpack assets generated by the compiler over a web sever.
-        const serverConfig = createDevServerConfig(
-            proxyConfig,
-            urls.lanUrlForConfig
-        );
-        const devServer = new WebpackDevServer(compiler, serverConfig);
+      process.env.REACT_APP_DEV_SERVER_PORT = port;
 
-        devServer.listen(port, HOST, err => {
-            if (err) {
-                return console.log(err);
-            }
+      const configServer = require(`../config/webpack.config.server`);
+      const compiler = webpack(configServer);
+      const devUrls = prepareUrls(protocol, HOST, port);
+      let isServerRunning;
 
-            process.env.REACT_APP_DEV_SERVER_PORT = port
-            //process.env.REACT_APP_SERVER_SIDE_RENDERING_PORT = 8888
+      openBrowser(devUrls.localUrlForBrowser);
 
-            //const assetManifest = require('../../build/server/asset-manifest.json')
-            // process.env.REACT_APP_ASSET_MANIFEST = JSON.stringify(assetManifest)
+      compiler.watch(
+        {
+          aggregateTimeout: 300
+        },
+        (err, stats) => {
+          if (err) console.log("error on webpack server", err);
 
-            const configServer = require(`../config/webpack.config.server`);
-            const compiler = webpack(configServer)
-            const devUrls = prepareUrls(protocol, HOST, port)
-            let isServerRunning
+          if (!isServerRunning) {
+            isServerRunning = true;
 
-            openBrowser(devUrls.localUrlForBrowser)
+            const nodemon = exec(
+              "npx nodemon --watch build-server/index.js build-server/index.js"
+            );
 
-            compiler.watch(
-                {
-                    aggregateTimeout: 300
-                },
-                (err, stats) => {
-                    if (err) console.log('error on webpack server', err)
-
-                    if (!isServerRunning) {
-                        isServerRunning = true
-                        terminalUtils.openTab('npm run nodemon');
-                        const urls = prepareUrls(protocol, HOST, process.env.REACT_APP_SERVER_SIDE_RENDERING_PORT);
-                        // const nodemon = exec(
-                        //     //'nodemon --watch build/server build/server/index.js build/server/index.js'
-                        //     'node build/server/index.js'
-                        // )
-
-                        // // This is to outpout in the terminal the child process
-                        // nodemon.stdout.on('data', (data) => {
-                        //     console.log(data.toString())
-                        // })
-                        // nodemon.on('exit', (code) => {
-                        //     console.log(`nodemon process exited with code ${code.toString()}`)
-                        // })
-
-                        setTimeout(
-                            () => {
-                                openBrowser(urls.localUrlForBrowser)
-                            },
-                            4000
-                        )
-                    }
-                }
-            )
-        });
-
-        ['SIGINT', 'SIGTERM'].forEach(function (sig) {
-            process.on(sig, function () {
-                devServer.close();
-                process.exit();
+            // This is to outpout in the terminal the child process
+            nodemon.stdout.on("data", data => {
+              console.log(data.toString());
             });
-        });
-    })
-    .catch(err => {
-        if (err && err.message) {
-            console.log(err.message);
+            nodemon.on("exit", code => {
+              console.log(
+                `nodemon process exited with code ${code.toString()}`
+              );
+            });
+
+            const urls = prepareUrls(
+              protocol,
+              HOST,
+              process.env.REACT_APP_SERVER_SIDE_RENDERING_PORT
+            );
+
+            setTimeout(() => {
+              openBrowser(urls.localUrlForBrowser);
+            }, 4000);
+          }
         }
-        process.exit(1);
+      );
     });
 
-
+    ["SIGINT", "SIGTERM"].forEach(function(sig) {
+      process.on(sig, function() {
+        devServer.close();
+        process.exit();
+      });
+    });
+  })
+  .catch(err => {
+    if (err && err.message) {
+      console.log(err.message);
+    }
+    process.exit(1);
+  });
