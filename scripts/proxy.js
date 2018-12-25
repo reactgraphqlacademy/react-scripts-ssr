@@ -44,18 +44,18 @@ try {
 }
 
 const WEB_HOST =
-  customHttpProxyConfig.proxy.webHost || program.webHost || "localhost";
+  program.webHost || customHttpProxyConfig.proxy.webHost || "localhost";
 const WEB_PORT =
-  customHttpProxyConfig.proxy.webPort || program.webPort || "3000";
+  program.webPort || customHttpProxyConfig.proxy.webPort || "3000";
 const WEB_URL = `http://${WEB_HOST}:${WEB_PORT}`;
 const API_URL =
-  customHttpProxyConfig.proxy.apiUrl ||
   program.apiUrl ||
+  customHttpProxyConfig.proxy.apiUrl ||
   "http://localhost:8080";
 const PROXY_PORT =
-  customHttpProxyConfig.proxy.proxyPort || program.proxyPort || 5050;
+  program.proxyPort || customHttpProxyConfig.proxy.proxyPort || 5050;
 const PROXY_HOST =
-  customHttpProxyConfig.proxy.proxyHost || program.proxyHost || "localhost";
+  program.proxyHost || customHttpProxyConfig.proxy.proxyHost || "localhost";
 
 const proxy = httpProxy.createProxyServer({
   ws: true,
