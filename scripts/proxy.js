@@ -62,8 +62,6 @@ const proxy = httpProxy.createProxyServer({
   ...customHttpProxyConfig.proxy
 });
 
-console.log("customHttpProxyConfig", customHttpProxyConfig);
-console.log("customHttpProxyConfig", customHttpProxyConfig);
 var server = http.createServer((req, res) => {
   try {
     const host = req.headers.host.split(":")[0];
