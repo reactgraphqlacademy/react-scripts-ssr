@@ -1,6 +1,5 @@
 "use strict";
-
-// ln -s /Users/alexlobera/Projects/leanjscom/internal/react-design-system/react-scripts-ssr/bin/index.js /Users/alexlobera/Projects/leanjscom/internal/react-design-system/node_modules/.bin/react-scripts-ssr
+const program = require("commander");
 
 // Do this as the first thing so that any code reading it knows the right env.
 process.env.BABEL_ENV = "development";
@@ -22,7 +21,6 @@ const fs = require("fs");
 const chalk = require("chalk");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
-const clearConsole = require("react-dev-utils/clearConsole");
 const checkRequiredFiles = require("react-dev-utils/checkRequiredFiles");
 const {
   choosePort,
@@ -37,7 +35,6 @@ const config = require(`${reactScriptsPath}/config/webpack.config.dev`);
 const createDevServerConfig = require(`${reactScriptsPath}/config/webpackDevServer.config`);
 
 const useYarn = fs.existsSync(paths.yarnLockFile);
-const isInteractive = process.stdout.isTTY;
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
@@ -94,12 +91,25 @@ choosePort(HOST, DEFAULT_PORT)
 
       process.env.REACT_APP_DEV_SERVER_PORT = port;
 
-      const configServer = require(`../config/webpack.config.server`);
-      const compiler = webpack(configServer);
+      program
+        .version("0.1.0")
+        .option("-enpx, --enable-proxy", "Enables proxy")
+        .option("-dssr, --disable-ssr", "Disable SSR")
+        .parse(process.argv);
+
       const devUrls = prepareUrls(protocol, HOST, port);
       let isServerRunning;
 
       openBrowser(devUrls.localUrlForBrowser);
+
+      if (program.enableProxy) {
+        require("./proxy.js");
+      }
+      if (program.disableSsr) {
+        return;
+      }
+      const configServer = require(`../config/webpack.config.server`);
+      const compiler = webpack(configServer);
 
       compiler.watch(
         {
