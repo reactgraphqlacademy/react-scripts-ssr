@@ -68,6 +68,8 @@ choosePort(HOST, DEFAULT_PORT)
       // We have not found a port.
       return;
     }
+
+    process.env.REACT_APP_CLIENT_PORT = port;
     const protocol = process.env.HTTPS === "true" ? "https" : "http";
     const appName = require(paths.appPackageJson).name;
     const urls = prepareUrls(protocol, HOST, port);
@@ -120,14 +122,24 @@ choosePort(HOST, DEFAULT_PORT)
 
           if (!isServerRunning) {
             isServerRunning = true;
-
             const nodemon = exec(
-              "npx nodemon --watch build-server/index.js build-server/index.js"
+              "npx nodemon --watch build-server/index.js build-server/index.js",
+              (err, stdout, stderr) => {
+                if (err) {
+                  console.error(`exec error: ${err}`);
+                  return;
+                }
+
+                console.log(`Number of files ${stdout}`);
+              }
             );
 
             // This is to outpout in the terminal the child process
             nodemon.stdout.on("data", data => {
               console.log(data.toString());
+            });
+            nodemon.stderr.on("data", data => {
+              console.error(data);
             });
             nodemon.on("exit", code => {
               console.log(

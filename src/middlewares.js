@@ -17,7 +17,7 @@ function createSSRMiddleware(middleware) {
     );
   } else {
     router.use(
-      ["/static", "/sockjs-node"],
+      ["/static", "/sockjs-node", "/api"],
       proxy({
         target: `http://localhost:${process.env.REACT_APP_DEV_SERVER_PORT}`,
         ws: true

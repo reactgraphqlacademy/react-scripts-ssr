@@ -2,8 +2,8 @@ const httpProxy = require("http-proxy");
 const http = require("http");
 const fs = require("fs");
 const program = require("commander");
-const pathCustomConfig = "./.react-scripts-ssr.json";
 const openBrowser = require("react-dev-utils/openBrowser");
+const pathsSSRScripts = require("../config/paths");
 
 program
   .version("0.1.0")
@@ -31,10 +31,14 @@ program
 
 let customHttpProxyConfig = { proxy: {} };
 try {
-  if (fs.existsSync(pathCustomConfig)) {
-    customConfig = JSON.parse(fs.readFileSync(pathCustomConfig));
+  if (fs.existsSync(pathsSSRScripts.customScriptConfig)) {
+    customConfig = JSON.parse(
+      fs.readFileSync(pathsSSRScripts.customScriptConfig)
+    );
     if (customConfig.proxy) {
-      customHttpProxyConfig = customConfig;
+      customHttpProxyConfig = customConfig.proxy;
+    } else {
+      throw new Error("customConfig doesn't have a key called proxy");
     }
   }
 } catch (error) {
@@ -44,22 +48,18 @@ try {
 }
 
 const WEB_HOST =
-  program.webHost || customHttpProxyConfig.proxy.webHost || "localhost";
-const WEB_PORT =
-  program.webPort || customHttpProxyConfig.proxy.webPort || "3000";
+  program.webHost || customHttpProxyConfig.webHost || "localhost";
+const WEB_PORT = program.webPort || customHttpProxyConfig.webPort || "3000";
 const WEB_URL = `http://${WEB_HOST}:${WEB_PORT}`;
 const API_URL =
-  program.apiUrl ||
-  customHttpProxyConfig.proxy.apiUrl ||
-  "http://localhost:8080";
-const PROXY_PORT =
-  program.proxyPort || customHttpProxyConfig.proxy.proxyPort || 5050;
+  program.apiUrl || customHttpProxyConfig.apiUrl || "http://localhost:8080";
+const PROXY_PORT = program.proxyPort || customHttpProxyConfig.proxyPort || 5050;
 const PROXY_HOST =
-  program.proxyHost || customHttpProxyConfig.proxy.proxyHost || "localhost";
+  program.proxyHost || customHttpProxyConfig.proxyHost || "localhost";
 
 const proxy = httpProxy.createProxyServer({
   ws: true,
-  ...customHttpProxyConfig.proxy
+  ...customHttpProxyConfig
 });
 
 var server = http.createServer((req, res) => {

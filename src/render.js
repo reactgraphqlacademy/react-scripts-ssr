@@ -23,7 +23,7 @@ async function render(pageData, req, res) {
     if (process.env.NODE_ENV === "development") {
       const fetch = require("node-fetch").default;
       const pageDevResponse = await fetch(
-        `http://localhost:${process.env.REACT_APP_DEV_SERVER_PORT}`
+        `http://localhost:${process.env.REACT_APP_DEV_SERVER_PORT}${req.path}`
       );
       const pageTemplate = await pageDevResponse.text();
       const page = injectHTML(pageTemplate, pageData);
