@@ -1,0 +1,51 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+input,
+button {
+  font-size: 20px;
+}
+button {
+  border-radius: 5px;
+  padding: 5px 10px;
+}
+
+form {
+  text-align: left;
+}
+label {
+  padding-top: 8px 0;
+  display: inline-block;
+}
+input {
+  margin-bottom: 8px;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
