@@ -6,13 +6,13 @@ import LoginForm from "./demo/LoginForm";
 
 const toUpperCase = text => text.toUpperCase();
 
-const removeSpaces = text => text.replace(/\s/g, "");
+const addSpaces = text => text.replace(/-/g, " ");
 
 const removeNumbers = text => text.replace(/[0-9]/g, "");
 
-const text = "1 2 3 composition is awesome";
+const text = "1-2-3-composition-is-awesome";
 
-const formatedText = toUpperCase(removeSpaces(removeNumbers(text)));
+const formatedText = toUpperCase(addSpaces(removeNumbers(text)));
 // const formatedText = compose(
 //   toUpperCase,
 //   addSpaces,
