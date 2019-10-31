@@ -12,8 +12,12 @@ const removeNumbers = text => text.replace(/[0-9]/g, "");
 
 const text = "1 2 3 composition is awesome";
 
-// const formatedText = toUpperCase(removeSpaces(removeNumbers(text)));
-const formatedText = text;
+const formatedText = toUpperCase(removeSpaces(removeNumbers(text)));
+// const formatedText = compose(
+//   toUpperCase,
+//   addSpaces,
+//   removeNumbers
+// )(text);
 
 console.log(formatedText);
 
@@ -31,4 +35,4 @@ class App extends React.Component {
   }
 }
 
-export default App;
+export default withMousePosition(App);
