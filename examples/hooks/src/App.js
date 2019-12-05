@@ -12,7 +12,12 @@ const removeNumbers = text => text.replace(/[0-9]/g, "");
 
 const text = "1-2-3-composition-is-awesome";
 
-const formatedText = toUpperCase(addSpaces(removeNumbers(text)));
+let formatedText;
+formatedText = removeNumbers(text);
+formatedText = addSpaces(formatedText);
+formatedText = toUpperCase(formatedText);
+
+// formatedText = toUpperCase(addSpaces(removeNumbers(text)));
 // const formatedText = compose(
 //   toUpperCase,
 //   addSpaces,
