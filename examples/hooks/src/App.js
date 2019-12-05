@@ -18,7 +18,7 @@ formatedText = addSpaces(formatedText);
 formatedText = toUpperCase(formatedText);
 
 // formatedText = toUpperCase(addSpaces(removeNumbers(text)));
-// const formatedText = compose(
+// formatedText = compose(
 //   toUpperCase,
 //   addSpaces,
 //   removeNumbers
